@@ -1,3 +1,5 @@
+
+import 'package:project_uts_emertech/main.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
 
@@ -8,19 +10,32 @@ class HighScore extends StatelessWidget {
       appBar: AppBar(
         title: const Text("High Score"),
       ),
-      body: const Column(
-        children: <Widget>[],
+      body: Center(child: Column(
+        children: <Widget>[
+            const Text(
+              'High Score:',
+            ),
+            Text(
+              "1st : " + top_users[0] + " -> " + top_scores[0].toString(),
+            ),
+            Text(
+              "2nd : " + top_users[1] + " -> " + top_scores[1].toString(),
+            ),
+            Text(
+              "3rd : " + top_users[2] + " -> " + top_scores[2].toString(),
+            ),
+            ],
       ),
+      )
     );
   }
 }
-
 Future<List> getUser(String number) async {
   final prefs = await SharedPreferences.getInstance();
   String user1 = prefs.getString("top_user1") ?? '';
   String user2 = prefs.getString("top_user2") ?? '';
   String user3 = prefs.getString("top_user3") ?? '';
-  List<String> users = [user1, user2, user3];
+  List<String> users =[user1,user2,user3];
   return users;
 }
 
@@ -29,6 +44,6 @@ Future<List> getScore() async {
   int score1 = prefs.getInt("top_score1") ?? 0;
   int score2 = prefs.getInt("top_score2") ?? 0;
   int score3 = prefs.getInt("top_score3") ?? 0;
-  List<int> scores = [score1, score2, score3];
+  List<int> scores = [score1,score2,score3];
   return scores;
 }

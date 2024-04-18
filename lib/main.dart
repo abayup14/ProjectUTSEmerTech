@@ -5,12 +5,26 @@ import 'package:project_uts_emertech/screen/login.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 String user_login = "";
+List top_users=[];
+List top_scores=[];
 
 Future<String> cekUserLogin() async {
   final prefs = await SharedPreferences.getInstance();
   String user_login = prefs.getString("username") ?? "";
   return user_login;
 }
+
+//ini cuma buat nyoba highscore
+void setScore() async {
+  final prefs = await SharedPreferences.getInstance();
+  prefs.setInt("top_score1", 9 );
+  prefs.setString("top_user1", "bayu");
+  prefs.setInt("top_score2", 7 );
+  prefs.setString("top_user2", "vic");
+  prefs.setInt("top_score3", 3 );
+  prefs.setString("top_user3", "er");
+  main();
+  }
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -199,6 +213,13 @@ class _MyHomePageState extends State<MyHomePage> {
               title: const Text("High Score"),
               leading: const Icon(Icons.games),
               onTap: () {
+                getScore().then((List res) {
+                    top_scores = res;
+                    print(top_scores);
+                });
+                getUser().then((List result) {
+                  top_users = result;
+                });
                 Navigator.popAndPushNamed(context, "high_score");
               },
             ),
@@ -207,6 +228,13 @@ class _MyHomePageState extends State<MyHomePage> {
               leading: const Icon(Icons.logout),
               onTap: () {
                 doLogout();
+              },
+            ),
+            ListTile(
+              title: const Text("setScore"),
+              leading: const Icon(Icons.numbers),
+              onTap: () {
+                setScore();
               },
             )
           ],
