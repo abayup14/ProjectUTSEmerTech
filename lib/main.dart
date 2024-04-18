@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:project_uts_emertech/screen/game.dart';
 import 'package:project_uts_emertech/screen/high_score.dart';
 import 'package:project_uts_emertech/screen/login.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -69,6 +70,7 @@ class MyApp extends StatelessWidget {
       home: const MyHomePage(title: 'Guess The Card'),
       routes: {
         "high_score": (context) => HighScore(),
+        "game": (context) => Game(),
       },
     );
   }
@@ -172,8 +174,8 @@ class _MyHomePageState extends State<MyHomePage> {
             TextButton(
               child: Text("PLAY"),
               onPressed: () {
-                
-          },
+                Navigator.popAndPushNamed(context, "game");
+            },
         ),
           ],
         ),
