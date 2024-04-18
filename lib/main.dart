@@ -38,8 +38,6 @@ void main() {
   });
 }
 
-String active_user = "";
-
 Future<String> checkUser() async {
   final prefs = await SharedPreferences.getInstance();
   String user_id = prefs.getString("user_id") ?? '';
