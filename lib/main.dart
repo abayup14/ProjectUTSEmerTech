@@ -30,7 +30,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Guess The Card',
+      title: 'MemorImage',
       theme: ThemeData(
         // This is the theme of your application.
         //
@@ -50,7 +50,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Guess The Card'),
+      home: const MyHomePage(title: 'MemorImage'),
       routes: {
         "high_score": (context) => HighScore(),
       },
