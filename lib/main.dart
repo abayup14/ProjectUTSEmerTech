@@ -169,12 +169,12 @@ class _MyHomePageState extends State<MyHomePage> {
             const Text(
               '- Akan diberikan waktu 30 detik untuk memilih tiap gambar',
             ),
-            TextButton(
-              child: Text("PLAY"),
+            ElevatedButton(
               onPressed: () {
-                Navigator.popAndPushNamed(context, "game");
-            },
-        ),
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => Game()));
+              },
+              child: Text("PLAY"))
           ],
         ),
       ),
