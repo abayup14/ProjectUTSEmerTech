@@ -23,6 +23,20 @@ void main() {
   });
 }
 
+String active_user = "";
+
+Future<String> checkUser() async {
+  final prefs = await SharedPreferences.getInstance();
+  String user_id = prefs.getString("user_id") ?? '';
+  return user_id;
+}
+
+void doLogout() async {
+  final prefs = await SharedPreferences.getInstance();
+  prefs.remove("user_id");
+  main();
+}
+
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -30,7 +44,9 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+
       title: 'Guess The Card',
+
       theme: ThemeData(
         // This is the theme of your application.
         //
@@ -47,7 +63,7 @@ class MyApp extends StatelessWidget {
         //
         // This works for code too, not just values: Most code changes can be
         // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.lightGreen),
         useMaterial3: true,
       ),
       home: const MyHomePage(title: 'Guess The Card'),
@@ -57,6 +73,8 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+
+
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
@@ -79,16 +97,16 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
 
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
-  }
+  // void _incrementCounter() {
+  //   setState(() {
+  //     // This call to setState tells the Flutter framework that something has
+  //     // changed in this State, which causes it to rerun the build method below
+  //     // so that the display can reflect the updated values. If we changed
+  //     // _counter without calling setState(), then the build method would not be
+  //     // called again, and so nothing would appear to happen.
+  //     _counter++;
+  //   });
+  // }
 
   void doLogout() async {
     final prefs = await SharedPreferences.getInstance();
@@ -132,7 +150,32 @@ class _MyHomePageState extends State<MyHomePage> {
           // action in the IDE, or press "p" in the console), to see the
           // wireframe for each widget.
           mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[Text("Selamat datang $user_login")],
+          children: <Widget>[Text("Selamat datang $user_login"),
+          const Text(
+              'Cara Bermain:',
+            ),
+            const Text(
+              '- Quiz ini akan memberikan anda 5 gambar untuk diingat',
+            ),
+            const Text(
+              '- Anda diberikan waktu 3 untuk mengingat setiap gambar',
+            ),
+            const Text(
+              '- Setelah itu anda akan diberikan pilihan 4 gambar',
+            ),
+            const Text(
+              '- Anda perlu memilih salah satu gambar sesuai dengan yang anda ingat',
+            ),
+            const Text(
+              '- Akan diberikan waktu 30 detik untuk memilih tiap gambar',
+            ),
+            TextButton(
+              child: Text("PLAY"),
+              onPressed: () {
+                
+          },
+        ),
+          ],
         ),
       ),
       drawer:
