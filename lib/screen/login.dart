@@ -6,7 +6,7 @@ class MyLogin extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Project UTS Emerging Technology',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
@@ -76,7 +76,6 @@ class _LoginState extends State<Login> {
                     height: 50,
                     width: 300,
                     decoration: BoxDecoration(
-                        color: Colors.green,
                         borderRadius: BorderRadius.circular(20)),
                     child: ElevatedButton(
                       onPressed: () {
@@ -84,7 +83,7 @@ class _LoginState extends State<Login> {
                       },
                       child: const Text(
                         'Login',
-                        style: TextStyle(color: Colors.white, fontSize: 25),
+                        style: TextStyle(color: Colors.black, fontSize: 25),
                       ),
                     ),
                   )),

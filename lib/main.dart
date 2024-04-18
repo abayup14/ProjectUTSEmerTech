@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:project_uts_emertech/screen/high_score.dart';
 import 'package:project_uts_emertech/screen/login.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -50,7 +51,9 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
       home: const MyHomePage(title: 'Guess The Card'),
-      routes: {},
+      routes: {
+        "high_score": (context) => HighScore(),
+      },
     );
   }
 }
@@ -143,14 +146,22 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           children: <Widget>[
             UserAccountsDrawerHeader(
-                accountName: Text(user_login),
-                accountEmail: Text("$user_login@gmail.com"),
-                currentAccountPicture: CircleAvatar(
-                    backgroundImage:
-                        NetworkImage("https://i.pravatar.cc/150?img=70"))),
+              accountName: Text("Welcome $user_login"),
+              accountEmail: Text("$user_login@email.com"),
+              currentAccountPicture: const CircleAvatar(
+                backgroundImage: NetworkImage("https://picsum.photos/200"),
+              ),
+            ),
+            ListTile(
+              title: const Text("High Score"),
+              leading: const Icon(Icons.games),
+              onTap: () {
+                Navigator.popAndPushNamed(context, "high_score");
+              },
+            ),
             ListTile(
               title: const Text("Logout"),
-              leading: Icon(Icons.logout),
+              leading: const Icon(Icons.logout),
               onTap: () {
                 doLogout();
               },
