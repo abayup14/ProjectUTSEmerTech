@@ -2,7 +2,6 @@
 import 'package:project_uts_emertech/main.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
-import 'package:project_uts_emertech/screen/login.dart';
 
 class HighScore extends StatelessWidget {
   @override
