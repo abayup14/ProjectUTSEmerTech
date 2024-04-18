@@ -1,7 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:project_uts_emertech/screen/login.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+String user_login = "";
+
+Future<String> cekUserLogin() async {
+  final prefs = await SharedPreferences.getInstance();
+  String user_login = prefs.getString("username") ?? "";
+  return user_login;
+}
 
 void main() {
-  runApp(const MyApp());
+  WidgetsFlutterBinding.ensureInitialized();
+  cekUserLogin().then((String res) {
+    if (res == "") {
+      runApp(MyLogin());
+    } else {
+      user_login = res;
+      runApp(const MyApp());
+    }
+  });
 }
 
 class MyApp extends StatelessWidget {
@@ -11,7 +29,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Guess The Card',
       theme: ThemeData(
         // This is the theme of your application.
         //
@@ -31,7 +49,8 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const MyHomePage(title: 'Guess The Card'),
+      routes: {},
     );
   }
 }
@@ -66,6 +85,12 @@ class _MyHomePageState extends State<MyHomePage> {
       // called again, and so nothing would appear to happen.
       _counter++;
     });
+  }
+
+  void doLogout() async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.remove("username");
+    main();
   }
 
   @override
@@ -104,22 +129,33 @@ class _MyHomePageState extends State<MyHomePage> {
           // action in the IDE, or press "p" in the console), to see the
           // wireframe for each widget.
           mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-          ],
+          children: <Widget>[Text("Selamat datang $user_login")],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+      drawer:
+          funDrawer(), // This trailing comma makes auto-formatting nicer for build methods.
     );
+  }
+
+  Drawer funDrawer() {
+    return Drawer(
+        elevation: 16.0,
+        child: Column(
+          children: <Widget>[
+            UserAccountsDrawerHeader(
+                accountName: Text(user_login),
+                accountEmail: Text("$user_login@gmail.com"),
+                currentAccountPicture: CircleAvatar(
+                    backgroundImage:
+                        NetworkImage("https://i.pravatar.cc/150?img=70"))),
+            ListTile(
+              title: const Text("Logout"),
+              leading: Icon(Icons.logout),
+              onTap: () {
+                doLogout();
+              },
+            )
+          ],
+        ));
   }
 }
