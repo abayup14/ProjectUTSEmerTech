@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:math';
-
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 
 class Game extends StatefulWidget {
   @override
@@ -39,12 +39,14 @@ class _GameState extends State<Game> {
   int _detik = 0;
 
   bool _showQuest = false;
+  bool _quizStarted = false;
 
   int _picture_no = 0;
   String _picture_img = "";
   List<int> _picture = generateRandomPicture(1, 20);
   List<int> _answer = generateRandomAnswer(1, 4);
   List<int> _list_pict = [1, 2, 3, 4];
+  int _quiz_image_index = 0; // Track the specific picture for the quiz
 
   @override
   Widget build(BuildContext context) {
@@ -53,47 +55,98 @@ class _GameState extends State<Game> {
         title: const Text("MemorImage"),
       ),
       body: Center(
-        child: Column(children: gameplay()),
+        child: SingleChildScrollView(
+            child: Column(
+          children: gameplay(),
+        )),
       ),
     );
   }
 
   List<Widget> gameplay() {
-    if (_picture_no > -1 && _picture_no < 5) {
-      return [
-        Text(
-          formatTime(_detik),
-          style: const TextStyle(fontSize: 20),
-        ),
-        const Text("Memorize this"),
-        Image.asset("assets/images/$_picture_img.png")
-      ];
-    } else if (!_showQuest) {
-      _showQuest = true;
-      Random ran = Random();
-      int _get_pict = _picture[ran.nextInt(_picture.length)];
-      return [
-        Text("What is the same picture from previous?"),
-        Text(
-          formatTime(_detik),
-          style: const TextStyle(fontSize: 20),
-        ),
-        Image.asset("assets/images/c-${_get_pict}-${_list_pict[0]}.png"),
-        Image.asset("assets/images/c-${_get_pict}-${_list_pict[1]}.png"),
-        Image.asset("assets/images/c-${_get_pict}-${_list_pict[2]}.png"),
-        Image.asset("assets/images/c-${_get_pict}-${_list_pict[3]}.png"),
-      ];
-    } else {
-      return [];
+    if (!_quizStarted) {
+      // Displaying the sequence of images to memorize
+      if (_picture_no < 5) {
+        return [
+          Text(
+            formatTime(_detik),
+            style: const TextStyle(fontSize: 20),
+          ),
+          const Text("Memorize this"),
+          Image.asset("assets/images/$_picture_img.png"),
+        ];
+      }
     }
+
+    if (_showQuest && _quizStarted) {
+      // Keep the same images during the quiz phase
+      int quiz_image =
+          _picture[_quiz_image_index]; // The correct image to compare
+      return [
+        Text("What is the same picture from the previous sequence?"),
+        Text(
+          formatTime(_detik),
+          style: const TextStyle(fontSize: 20),
+        ),
+        Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Image.asset("assets/images/c-${quiz_image}-${_list_pict[0]}.png"),
+            SizedBox(width: 20),
+            Image.asset("assets/images/c-${quiz_image}-${_list_pict[1]}.png"),
+            SizedBox(width: 20),
+            Image.asset("assets/images/c-${quiz_image}-${_list_pict[2]}.png"),
+            SizedBox(width: 20),
+            Image.asset("assets/images/c-${quiz_image}-${_list_pict[3]}.png"),
+          ],
+        ),
+      ];
+    }
+
+    return [];
+  }
+
+  void startIngat() {
+    _timer = Timer.periodic(const Duration(milliseconds: 1000), (timer) {
+      setState(() {
+        _detik--;
+        if (_detik == 0) {
+          _picture_no++;
+          if (_picture_no < 5) {
+            _picture_img = "c-${_picture[_picture_no]}-${_answer[_picture_no]}";
+            _detik = _waktuIngat; // Reset timer for the next picture
+          } else {
+            // If we have reached the 5th picture, transition to the quiz phase
+            _quizStarted = true;
+            _showQuest = true; // Set this to show the quiz
+            _detik = _waktuJawab; // Reset timer for the quiz
+            _quiz_image_index =
+                Random().nextInt(5); // Select the specific picture for the quiz
+            _timer.cancel(); // Stop the memorization timer
+            startQuiz(); // Start the quiz timer
+          }
+        }
+      });
+    });
+  }
+
+  void startQuiz() {
+    _timer = Timer.periodic(const Duration(milliseconds: 1000), (timer) {
+      setState(() {
+        _detik--;
+        if (_detik == 0) {
+          _timer.cancel(); // Stop the quiz timer once the time is up
+        }
+      });
+    });
   }
 
   @override
   void initState() {
     super.initState();
-    _detik = _waktuIngat;
-    startTimer();
+    _detik = _waktuIngat; // Set initial memorization time
     _picture_img = "c-${_picture[0]}-${_answer[0]}";
+    startIngat(); // Start the memorization phase
   }
 
   String formatTime(int detik) {
@@ -103,32 +156,9 @@ class _GameState extends State<Game> {
     return "$hours:$minutes:$seconds";
   }
 
-  startIngat() {
-    _timer = Timer.periodic(const Duration(milliseconds: 1000), (timer) {
-      setState(() {
-        _detik--;
-        if (_detik == 0) {
-          _picture_no++;
-          _picture_img = "c-${_picture[_picture_no]}-${_answer[_picture_no]}";
-          if (_picture_no > 5) {
-            _timer.cancel();
-            _detik = 0;
-            _detik = _waktuJawab;
-          }
-          _detik = _waktuIngat;
-        }
-      });
-    });
-  }
-
-  startTimer() {
-    startIngat();
-  }
-
-  startQuiz() {}
-
   @override
   void dispose() {
+    _timer.cancel(); // Ensure timer is canceled to prevent memory leaks
     super.dispose();
   }
 }
