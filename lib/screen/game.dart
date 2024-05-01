@@ -41,7 +41,7 @@ class _GameState extends State<Game> {
   bool _showQuest = false;
   bool _quizStarted = false;
 
-  int _picture_no = 0;
+  int _picture_no = 0; // untuk saat sesi mengingat
   String _picture_img = "";
   List<int> _picture = generateRandomPicture(1, 20);
   List<int> _answer = generateRandomAnswer(1, 4);
@@ -79,27 +79,25 @@ class _GameState extends State<Game> {
     }
 
     if (_showQuest && _quizStarted) {
-      // Keep the same images during the quiz phase
-      int quiz_image =
-          _picture[_quiz_image_index]; // The correct image to compare
+      int quiz_image = _picture[_quiz_image_index];
       return [
-        Text("What is the same picture from the previous sequence?"),
+        const Text("What is the same picture from the previous sequence?"),
         Text(
           formatTime(_detik),
           style: const TextStyle(fontSize: 20),
         ),
-        Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+        Row(
           children: [
-            Image.asset("assets/images/c-${quiz_image}-${_list_pict[0]}.png"),
-            SizedBox(width: 20),
-            Image.asset("assets/images/c-${quiz_image}-${_list_pict[1]}.png"),
-            SizedBox(width: 20),
-            Image.asset("assets/images/c-${quiz_image}-${_list_pict[2]}.png"),
-            SizedBox(width: 20),
-            Image.asset("assets/images/c-${quiz_image}-${_list_pict[3]}.png"),
+            Image.asset("assets/images/c-$quiz_image-${_list_pict[0]}.png"),
+            Image.asset("assets/images/c-$quiz_image-${_list_pict[1]}.png"),
           ],
         ),
+        Row(
+          children: [
+            Image.asset("assets/images/c-$quiz_image-${_list_pict[2]}.png"),
+            Image.asset("assets/images/c-$quiz_image-${_list_pict[3]}.png"),
+          ],
+        )
       ];
     }
 
@@ -114,16 +112,14 @@ class _GameState extends State<Game> {
           _picture_no++;
           if (_picture_no < 5) {
             _picture_img = "c-${_picture[_picture_no]}-${_answer[_picture_no]}";
-            _detik = _waktuIngat; // Reset timer for the next picture
+            _detik = _waktuIngat;
           } else {
-            // If we have reached the 5th picture, transition to the quiz phase
             _quizStarted = true;
-            _showQuest = true; // Set this to show the quiz
-            _detik = _waktuJawab; // Reset timer for the quiz
-            _quiz_image_index =
-                Random().nextInt(5); // Select the specific picture for the quiz
-            _timer.cancel(); // Stop the memorization timer
-            startQuiz(); // Start the quiz timer
+            _showQuest = true;
+            _detik = _waktuJawab;
+            _quiz_image_index = Random().nextInt(5);
+            _timer.cancel();
+            startQuiz();
           }
         }
       });
