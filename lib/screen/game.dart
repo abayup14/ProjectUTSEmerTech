@@ -15,11 +15,12 @@ class _GameState extends State<Game> {
   final int _waktuIngat = 3;
   final int _waktuKuis = 30;
   int _detik = 0;
+  bool animated = false;
 
   bool _isKuisDimulai = false;
   bool _FaseMengingat = true;
 
-  int _memorizationIndex = 0;
+  int _gambarIngatKe = 0;
   List<String> _gambarDiingat = [];
   List<List<String>> _gambarKuis = [];
   int _gambarSekarang = 0;
@@ -38,8 +39,9 @@ class _GameState extends State<Game> {
       setState(() {
         _detik--;
         if (_detik <= 0) {
-          if (_memorizationIndex < _gambarDiingat.length - 1) {
-            _memorizationIndex++;
+          if (_gambarIngatKe < _gambarDiingat.length - 1) {
+            animated = !animated;
+            _gambarIngatKe++;
             _detik = _waktuIngat;
           } else {
             _FaseMengingat = false;
@@ -74,23 +76,23 @@ class _GameState extends State<Game> {
 
   List<String> buatGambarUntukDiingat(int count) {
     Random random = Random();
-    Set<int> uniqueSets = {}; // menyimpan set unik
-    List<String> images = [];
+    Set<int> randomGambarSets = {}; // menyimpan set unik
+    List<String> listGambar = [];
 
-    while (uniqueSets.length < count) {
-      int setNumber = 1 + random.nextInt(20); // set acak 1-20
-      int imageNumber = 1 + random.nextInt(4); // gambar acak 1-4
+    while (randomGambarSets.length < count) {
+      int gambarKe = 1 + random.nextInt(20); // set acak 1-20
+      int subgambarKe = 1 + random.nextInt(4); // gambar acak 1-4
 
-      if (uniqueSets.contains(setNumber)) {
+      if (randomGambarSets.contains(gambarKe)) {
         continue; // jika set sudah ada, lanjutkan loop
       }
 
-      String imageName = "c-$setNumber-$imageNumber"; // format nama gambar
-      images.add(imageName); // tambahkan gambar
-      uniqueSets.add(setNumber); // tambahkan set unik
+      String namaGambar = "c-$gambarKe-$subgambarKe"; // format nama gambar
+      listGambar.add(namaGambar); // tambahkan gambar
+      randomGambarSets.add(gambarKe); // tambahkan set unik
     }
 
-    return images; // kembalikan daftar gambar
+    return listGambar; // kembalikan daftar gambar
   }
 
   @override
@@ -100,9 +102,7 @@ class _GameState extends State<Game> {
         title: const Text("MemorImage"),
       ),
       body: Center(
-        child: _FaseMengingat
-            ? memorizationUI() // UI untuk fase mengingat
-            : quizUI(), // UI untuk fase kuis
+        child: _FaseMengingat ? memorizationUI() : quizUI(),
       ),
     );
   }
@@ -121,13 +121,17 @@ class _GameState extends State<Game> {
             width: MediaQuery.of(context).size.width,
             lineHeight: 20.0,
             percent: (_detik / _waktuIngat),
-            backgroundColor: Colors.grey,
-            progressColor: Colors.red,
+            backgroundColor: Colors.red,
+            progressColor: Colors.green,
           ),
-          // teks judul
-          if (_memorizationIndex < _gambarDiingat.length)
-            Image.asset(
-                "assets/images/${_gambarDiingat[_memorizationIndex]}.png"), // gambar fase mengingat // waktu tersisa
+          if (_gambarIngatKe < _gambarDiingat.length)
+            AnimatedAlign(
+              alignment: animated ? Alignment.topRight : Alignment.bottomLeft,
+              duration: const Duration(seconds: 1),
+              curve: Curves.easeInOut,
+              child: Image.asset(
+                  "assets/images/${_gambarDiingat[_gambarIngatKe]}.png"),
+            )
         ],
       ),
     ));
