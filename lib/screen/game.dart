@@ -48,7 +48,7 @@ class _GameState extends State<Game> {
             _currentSet = 0;
             _detik = _waktuKuis;
             _timer.cancel();
-            startQuiz(); 
+            startQuiz();
           }
         }
       });
@@ -56,15 +56,15 @@ class _GameState extends State<Game> {
   }
 
   void startQuiz() {
-    _timer = Timer.periodic(const Duration(milliseconds: 1000), (timer) {
+    _timer = Timer.periodic(Duration(milliseconds: 1000), (timer) {
       setState(() {
         _detik--; // kurangi waktu
         if (_detik <= 0) {
           if (_currentSet < _gambarKuis.length - 1) {
             _currentSet++; // pindah ke set berikutnya
-            _detik = _waktuKuis; // reset waktu untuk set kuis berikutnya
+            _detik = _waktuKuis; // reset waktu untuk set berikutnya
           } else {
-            _timer.cancel(); // hentikan timer
+            _timer.cancel(); // hentikan timer jika sudah melewati semua set
             // Logika akhir game atau fase kuis selesai
           }
         }
@@ -148,81 +148,98 @@ class _GameState extends State<Game> {
           ),
         ],
       )));
-    }
+    } else {
+      List<String> currentChoices =
+          _gambarKuis[_currentSet]; // set kuis saat ini
 
-    List<String> currentChoices = _gambarKuis[_currentSet]; // set kuis saat ini
-
-    return Center(
-      child: SingleChildScrollView(
-        child: Column(
-          children: [
-            const Text("Pilih gambar yang benar",
-                style: TextStyle(fontSize: 20)), // teks judul fase kuis
-            CircularPercentIndicator(
-              radius: 90.0,
-              lineWidth: 20.0,
-              percent: 1 - (_detik / _waktuKuis),
-              center: Text(formatTime(_detik)),
-              progressColor: Colors.red,
-            ),
-            Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    OutlinedButton(
-                      onPressed: () =>
-                          cekJawaban(currentChoices[0]), // cek jawaban
-                      child: Image.asset(
-                          "assets/images/${currentChoices[0]}.png"), // pilihan gambar
-                    ),
-                    OutlinedButton(
-                      onPressed: () =>
-                          cekJawaban(currentChoices[1]), // cek jawaban
-                      child: Image.asset(
-                          "assets/images/${currentChoices[1]}.png"), // pilihan gambar
-                    ),
-                  ],
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    OutlinedButton(
-                      onPressed: () =>
-                          cekJawaban(currentChoices[2]), // cek jawaban
-                      child: Image.asset(
-                          "assets/images/${currentChoices[2]}.png"), // pilihan gambar
-                    ),
-                    OutlinedButton(
-                      onPressed: () =>
-                          cekJawaban(currentChoices[3]), // cek jawaban
-                      child: Image.asset(
-                          "assets/images/${currentChoices[3]}.png"), // pilihan gambar
-                    ),
-                  ],
-                )
-              ],
-            ),
-          ],
+      return Center(
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              const Text("Pilih gambar yang benar",
+                  style: TextStyle(fontSize: 20)),
+              CircularPercentIndicator(
+                radius: 90.0,
+                lineWidth: 20.0,
+                percent: 1 - (_detik / _waktuKuis),
+                center: Text(formatTime(_detik)),
+                progressColor: Colors.red,
+              ),
+              Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      TextButton(
+                        onPressed: () => cekJawaban(currentChoices[0]),
+                        child: Image.asset(
+                          "assets/images/${currentChoices[0]}.png",
+                          height: 200,
+                          width: 200,
+                        ),
+                      ),
+                      TextButton(
+                        onPressed: () =>
+                            cekJawaban(currentChoices[1]), // cek jawaban
+                        child: Image.asset(
+                          "assets/images/${currentChoices[1]}.png",
+                          height: 200,
+                          width: 200,
+                        ), // pilihan gambar
+                      ),
+                    ],
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      TextButton(
+                        onPressed: () =>
+                            cekJawaban(currentChoices[2]), // cek jawaban
+                        child: Image.asset(
+                          "assets/images/${currentChoices[2]}.png",
+                          height: 200,
+                          width: 200,
+                        ), // pilihan gambar
+                      ),
+                      TextButton(
+                        onPressed: () =>
+                            cekJawaban(currentChoices[3]), // cek jawaban
+                        child: Image.asset(
+                          "assets/images/${currentChoices[3]}.png",
+                          height: 200,
+                          width: 200,
+                        ), // pilihan gambar
+                      ),
+                    ],
+                  )
+                ],
+              ),
+            ],
+          ),
         ),
-      ),
-    );
+      );
+    }
   }
 
   void cekJawaban(String selectedOption) {
     String correctAnswer = _gambarDiingat[_currentSet];
 
     if (selectedOption == correctAnswer) {
-      _score++;
+      _score++; // tingkatkan skor jika jawaban benar
     }
 
-    if (_currentSet < _gambarKuis.length - 1) {
-      _currentSet++;
-      _detik = _waktuKuis;
-      _timer.cancel();
+    // Periksa apakah ini adalah set kuis terakhir
+    if (_currentSet >= _gambarKuis.length) {
+      // Jika set terakhir, hentikan timer dan berikan logika akhir kuis
+      _timer.cancel(); // hentikan timer untuk menghindari kebocoran memori
+      setState(() {}); // perbarui UI
+    } else {
+      // Jika masih ada set kuis, lanjutkan ke set berikutnya
+      _currentSet++; // pindah ke set berikutnya
+      _detik = _waktuKuis; // reset waktu untuk set kuis berikutnya
+      _timer.cancel(); // pastikan timer dihentikan
+      startQuiz(); // mulai ulang timer
     }
-
-    setState(() {}); // perbarui UI
   }
 
   List<List<String>> generateQuizSets() {
