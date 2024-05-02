@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 
 class Game extends StatefulWidget {
   @override
-  _GameState createState() => _GameState();
+  State<StatefulWidget> createState() {
+    return _GameState();
+  }
 }
 
 class _GameState extends State<Game> {
