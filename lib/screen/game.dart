@@ -16,40 +16,39 @@ class _GameState extends State<Game> {
   int _waktuKuis = 30;
   int _detik = 0;
 
-  bool _quizStarted = false; // apakah kuis sudah dimulai
-  bool _memorizationPhase = true; // apakah fase mengingat masih berlangsung
+  bool _quizStarted = false;
+  bool _memorizationPhase = true;
 
-  int _memorizationIndex = 0; // indeks gambar di fase mengingat
-  List<String> _gambarDiingat = []; // gambar-gambar yang diingat
-  List<List<String>> _gambarKuis = []; // set kuis dengan 4 pilihan
-  int _currentSet = 0; // set kuis saat ini
-  int _score = 0; // skor pemain
+  int _memorizationIndex = 0;
+  List<String> _gambarDiingat = [];
+  List<List<String>> _gambarKuis = [];
+  int _currentSet = 0;
+  int _score = 0;
 
   @override
   void initState() {
     super.initState();
-    _gambarDiingat =
-        buatGambarUntukDiingat(5); // menghasilkan 5 gambar untuk fase mengingat
-    _detik = _waktuIngat; // waktu awal untuk fase mengingat
-    mulaiMengingat(); // mulai fase mengingat
+    _gambarDiingat = buatGambarUntukDiingat(5);
+    _detik = _waktuIngat;
+    mulaiMengingat();
   }
 
   void mulaiMengingat() {
     _timer = Timer.periodic(const Duration(milliseconds: 1000), (timer) {
       setState(() {
-        _detik--; // kurangi waktu
+        _detik--;
         if (_detik <= 0) {
           if (_memorizationIndex < _gambarDiingat.length - 1) {
-            _memorizationIndex++; // pindah ke gambar berikutnya
-            _detik = _waktuIngat; // reset waktu untuk gambar berikutnya
+            _memorizationIndex++;
+            _detik = _waktuIngat;
           } else {
-            _memorizationPhase = false; // fase mengingat selesai
-            _quizStarted = true; // fase kuis dimulai
-            _gambarKuis = generateQuizSets(); // buat set kuis
-            _currentSet = 0; // set kuis pertama
-            _detik = _waktuKuis; // reset waktu untuk kuis
-            _timer.cancel(); // hentikan timer fase mengingat
-            startQuiz(); // mulai fase kuis
+            _memorizationPhase = false;
+            _quizStarted = true;
+            _gambarKuis = generateQuizSets();
+            _currentSet = 0;
+            _detik = _waktuKuis;
+            _timer.cancel();
+            startQuiz(); 
           }
         }
       });
@@ -117,7 +116,7 @@ class _GameState extends State<Game> {
           LinearPercentIndicator(
             center: Text(
               formatTime(_detik),
-              style: TextStyle(fontSize: 16),
+              style: const TextStyle(fontSize: 16),
             ),
             width: MediaQuery.of(context).size.width,
             lineHeight: 20.0,
@@ -211,21 +210,16 @@ class _GameState extends State<Game> {
   }
 
   void cekJawaban(String selectedOption) {
-    // Jawaban yang benar adalah gambar yang sesuai dengan set saat ini
     String correctAnswer = _gambarDiingat[_currentSet];
 
-    // Jika jawaban yang dipilih adalah jawaban yang benar, tingkatkan skor
     if (selectedOption == correctAnswer) {
-      _score++; // tambah skor jika jawaban benar
+      _score++;
     }
 
-    // Setelah memeriksa jawaban, pindah ke set kuis berikutnya
     if (_currentSet < _gambarKuis.length - 1) {
-      _currentSet++; // pindah ke set berikutnya
-      _detik = _waktuKuis; // reset waktu untuk set kuis berikutnya
-    } else {
-      _timer.cancel(); // hentikan timer
-      // Logika untuk akhir kuis (misalnya, menampilkan hasil akhir)
+      _currentSet++;
+      _detik = _waktuKuis;
+      _timer.cancel();
     }
 
     setState(() {}); // perbarui UI
