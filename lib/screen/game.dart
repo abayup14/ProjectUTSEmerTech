@@ -12,17 +12,17 @@ class Game extends StatefulWidget {
 
 class _GameState extends State<Game> {
   late Timer _timer;
-  int _waktuIngat = 3;
-  int _waktuKuis = 30;
+  final int _waktuIngat = 3;
+  final int _waktuKuis = 30;
   int _detik = 0;
 
-  bool _quizStarted = false;
-  bool _memorizationPhase = true;
+  bool _isKuisDimulai = false;
+  bool _FaseMengingat = true;
 
   int _memorizationIndex = 0;
   List<String> _gambarDiingat = [];
   List<List<String>> _gambarKuis = [];
-  int _currentSet = 0;
+  int _gambarSekarang = 0;
   int _score = 0;
 
   @override
@@ -42,10 +42,10 @@ class _GameState extends State<Game> {
             _memorizationIndex++;
             _detik = _waktuIngat;
           } else {
-            _memorizationPhase = false;
-            _quizStarted = true;
+            _FaseMengingat = false;
+            _isKuisDimulai = true;
             _gambarKuis = generateQuizSets();
-            _currentSet = 0;
+            _gambarSekarang = 0;
             _detik = _waktuKuis;
             _timer.cancel();
             startQuiz();
@@ -56,12 +56,12 @@ class _GameState extends State<Game> {
   }
 
   void startQuiz() {
-    _timer = Timer.periodic(Duration(milliseconds: 1000), (timer) {
+    _timer = Timer.periodic(const Duration(milliseconds: 1000), (timer) {
       setState(() {
         _detik--; // kurangi waktu
         if (_detik <= 0) {
-          if (_currentSet < _gambarKuis.length - 1) {
-            _currentSet++; // pindah ke set berikutnya
+          if (_gambarSekarang < _gambarKuis.length - 1) {
+            _gambarSekarang++; // pindah ke set berikutnya
             _detik = _waktuKuis; // reset waktu untuk set berikutnya
           } else {
             _timer.cancel(); // hentikan timer jika sudah melewati semua set
@@ -100,7 +100,7 @@ class _GameState extends State<Game> {
         title: const Text("MemorImage"),
       ),
       body: Center(
-        child: _memorizationPhase
+        child: _FaseMengingat
             ? memorizationUI() // UI untuk fase mengingat
             : quizUI(), // UI untuk fase kuis
       ),
@@ -134,7 +134,7 @@ class _GameState extends State<Game> {
   }
 
   Widget quizUI() {
-    if (_currentSet >= _gambarKuis.length) {
+    if (_gambarSekarang >= _gambarKuis.length) {
       return Center(
           child: SingleChildScrollView(
               child: Column(
@@ -150,7 +150,7 @@ class _GameState extends State<Game> {
       )));
     } else {
       List<String> currentChoices =
-          _gambarKuis[_currentSet]; // set kuis saat ini
+          _gambarKuis[_gambarSekarang]; // set kuis saat ini
 
       return Center(
         child: SingleChildScrollView(
@@ -222,20 +222,20 @@ class _GameState extends State<Game> {
   }
 
   void cekJawaban(String selectedOption) {
-    String correctAnswer = _gambarDiingat[_currentSet];
+    String correctAnswer = _gambarDiingat[_gambarSekarang];
 
     if (selectedOption == correctAnswer) {
       _score++; // tingkatkan skor jika jawaban benar
     }
 
     // Periksa apakah ini adalah set kuis terakhir
-    if (_currentSet >= _gambarKuis.length) {
+    if (_gambarSekarang >= _gambarKuis.length) {
       // Jika set terakhir, hentikan timer dan berikan logika akhir kuis
       _timer.cancel(); // hentikan timer untuk menghindari kebocoran memori
       setState(() {}); // perbarui UI
     } else {
       // Jika masih ada set kuis, lanjutkan ke set berikutnya
-      _currentSet++; // pindah ke set berikutnya
+      _gambarSekarang++; // pindah ke set berikutnya
       _detik = _waktuKuis; // reset waktu untuk set kuis berikutnya
       _timer.cancel(); // pastikan timer dihentikan
       startQuiz(); // mulai ulang timer
