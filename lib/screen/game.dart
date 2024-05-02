@@ -1,7 +1,14 @@
 import 'dart:async';
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:project_uts_emertech/main.dart';
 import 'package:percent_indicator/percent_indicator.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+void setScore(int score) async {
+  final prefs = await SharedPreferences.getInstance();
+  prefs.setInt("game_score", score);
+}
 
 class Game extends StatefulWidget {
   @override
@@ -138,7 +145,10 @@ class _GameState extends State<Game> {
   }
 
   Widget quizUI() {
+
     if (_gambarSekarang >= _gambarKuis.length) {
+
+      setScore(_score);
       return Center(
           child: SingleChildScrollView(
               child: Column(
@@ -146,8 +156,9 @@ class _GameState extends State<Game> {
           Text("Game selesai! Skor Anda: $_score",
               style: const TextStyle(fontSize: 20)), // teks akhir
           ElevatedButton(
-            onPressed: () =>
-                Navigator.pop(context), // kembali ke layar sebelumnya
+            onPressed: ()  {
+                showResult(context);
+            },
             child: const Text("Kembali"),
           ),
         ],

@@ -3,10 +3,12 @@ import 'package:project_uts_emertech/screen/game.dart';
 import 'package:project_uts_emertech/screen/high_score.dart';
 import 'package:project_uts_emertech/screen/login.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:project_uts_emertech/screen/result.dart';
 
 String user_login = "";
 List top_users=[];
 List top_scores=[];
+int game_score = 0;
 
 Future<String> cekUserLogin() async {
   final prefs = await SharedPreferences.getInstance();
@@ -14,20 +16,59 @@ Future<String> cekUserLogin() async {
   return user_login;
 }
 
+Future<List> getUser() async {
+  final prefs = await SharedPreferences.getInstance();
+  String user1 = prefs.getString("top_user1") ?? '';
+  String user2 = prefs.getString("top_user2") ?? '';
+  String user3 = prefs.getString("top_user3") ?? '';
+  List<String> users = [user1, user2, user3];
+  return users;
+}
+
+Future<List> getScore() async {
+  final prefs = await SharedPreferences.getInstance();
+  int score1 = prefs.getInt("top_score1") ?? 0;
+  int score2 = prefs.getInt("top_score2") ?? 0;
+  int score3 = prefs.getInt("top_score3") ?? 0;
+  List<int> scores = [score1, score2, score3];
+  return scores;
+}
+
 //ini cuma buat nyoba highscore
 void setScore() async {
   final prefs = await SharedPreferences.getInstance();
-  prefs.setInt("top_score1", 9 );
+  prefs.setInt("top_score1", 3 );
   prefs.setString("top_user1", "bayu");
-  prefs.setInt("top_score2", 7 );
+  prefs.setInt("top_score2", 2 );
   prefs.setString("top_user2", "vic");
-  prefs.setInt("top_score3", 3 );
+  prefs.setInt("top_score3", 1 );
   prefs.setString("top_user3", "er");
   main();
   }
 
+void setGameScore() async {
+  final prefs = await SharedPreferences.getInstance();
+  prefs.setInt("game_score", 3);
+  main();
+  }
+
+Future<int> checkGameScore() async {
+    final prefs = await SharedPreferences.getInstance();
+    int score = prefs.getInt("game_score") ?? 0;
+    return score;
+  }
+  void showResult(BuildContext context){
+    checkGameScore().then((int result) {
+      game_score = result;
+    });
+    Navigator.popAndPushNamed(context, "result");
+  }
+
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
+  // checkGameScore().then((int result) {
+  //   game_score = result;
+  // });
   cekUserLogin().then((String res) {
     if (res == "") {
       runApp(MyLogin());
@@ -81,6 +122,7 @@ class MyApp extends StatelessWidget {
       routes: {
         "high_score": (context) => HighScore(),
         "game": (context) => Game(),
+        "result": (context) => Result(),
       },
     );
   }
@@ -217,6 +259,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 });
                 getUser().then((List result) {
                   top_users = result;
+                  print(top_users);
                 });
                 Navigator.popAndPushNamed(context, "high_score");
               },
@@ -233,6 +276,20 @@ class _MyHomePageState extends State<MyHomePage> {
               leading: const Icon(Icons.numbers),
               onTap: () {
                 setScore();
+              },
+            ),
+            ListTile(
+              title: const Text("checkResult"),
+              leading: const Icon(Icons.numbers),
+              onTap: () {
+                Navigator.popAndPushNamed(context, "result");
+              },
+            ),
+            ListTile(
+              title: const Text("setGameScore"),
+              leading: const Icon(Icons.numbers),
+              onTap: () {
+                setGameScore();
               },
             )
           ],
