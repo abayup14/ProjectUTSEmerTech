@@ -34,24 +34,6 @@ Future<List> getScore() async {
   return scores;
 }
 
-//ini cuma buat nyoba highscore
-void setScore() async {
-  final prefs = await SharedPreferences.getInstance();
-  prefs.setInt("top_score1", 3 );
-  prefs.setString("top_user1", "bayu");
-  prefs.setInt("top_score2", 2 );
-  prefs.setString("top_user2", "vic");
-  prefs.setInt("top_score3", 1 );
-  prefs.setString("top_user3", "er");
-  main();
-  }
-
-void setGameScore() async {
-  final prefs = await SharedPreferences.getInstance();
-  prefs.setInt("game_score", 3);
-  main();
-  }
-
 Future<int> checkGameScore() async {
     final prefs = await SharedPreferences.getInstance();
     int score = prefs.getInt("game_score") ?? 0;
@@ -271,27 +253,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 doLogout();
               },
             ),
-            ListTile(
-              title: const Text("setScore"),
-              leading: const Icon(Icons.numbers),
-              onTap: () {
-                setScore();
-              },
-            ),
-            ListTile(
-              title: const Text("checkResult"),
-              leading: const Icon(Icons.numbers),
-              onTap: () {
-                Navigator.popAndPushNamed(context, "result");
-              },
-            ),
-            ListTile(
-              title: const Text("setGameScore"),
-              leading: const Icon(Icons.numbers),
-              onTap: () {
-                setGameScore();
-              },
-            )
+            
           ],
         ));
   }
