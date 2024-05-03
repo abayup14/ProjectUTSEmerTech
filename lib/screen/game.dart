@@ -67,14 +67,13 @@ class _GameState extends State<Game> {
   void startQuiz() {
     _timer = Timer.periodic(const Duration(milliseconds: 1000), (timer) {
       setState(() {
-        _detik--; // kurangi waktu
+        _detik--;
         if (_detik <= 0) {
           if (_gambarSekarang < _gambarKuis.length - 1) {
-            _gambarSekarang++; // pindah ke set berikutnya
-            _detik = _waktuKuis; // reset waktu untuk set berikutnya
+            _gambarSekarang++;
+            _detik = _waktuKuis;
           } else {
-            _timer.cancel(); // hentikan timer jika sudah melewati semua set
-            // Logika akhir game atau fase kuis selesai
+            _timer.cancel();
           }
         }
       });
@@ -83,23 +82,23 @@ class _GameState extends State<Game> {
 
   List<String> buatGambarUntukDiingat(int count) {
     Random random = Random();
-    Set<int> randomGambarSets = {}; // menyimpan set unik
+    Set<int> randomGambarSets = {};
     List<String> listGambar = [];
 
     while (randomGambarSets.length < count) {
-      int gambarKe = 1 + random.nextInt(20); // set acak 1-20
-      int subgambarKe = 1 + random.nextInt(4); // gambar acak 1-4
+      int gambarKe = 1 + random.nextInt(20);
+      int subgambarKe = 1 + random.nextInt(4);
 
       if (randomGambarSets.contains(gambarKe)) {
-        continue; // jika set sudah ada, lanjutkan loop
+        continue;
       }
 
-      String namaGambar = "c-$gambarKe-$subgambarKe"; // format nama gambar
-      listGambar.add(namaGambar); // tambahkan gambar
-      randomGambarSets.add(gambarKe); // tambahkan set unik
+      String namaGambar = "c-$gambarKe-$subgambarKe";
+      listGambar.add(namaGambar);
+      randomGambarSets.add(gambarKe);
     }
 
-    return listGambar; // kembalikan daftar gambar
+    return listGambar;
   }
 
   @override
@@ -145,28 +144,24 @@ class _GameState extends State<Game> {
   }
 
   Widget quizUI() {
-
     if (_gambarSekarang >= _gambarKuis.length) {
-
       setScore(_score);
       return Center(
           child: SingleChildScrollView(
               child: Column(
         children: [
           Text("Game selesai! Skor Anda: $_score",
-              style: const TextStyle(fontSize: 20)), // teks akhir
+              style: const TextStyle(fontSize: 20)),
           ElevatedButton(
-            onPressed: ()  {
-                showResult(context);
+            onPressed: () {
+              showResult(context);
             },
             child: const Text("Kembali"),
           ),
         ],
       )));
     } else {
-      List<String> currentChoices =
-          _gambarKuis[_gambarSekarang]; // set kuis saat ini
-
+      List<String> currentChoices = _gambarKuis[_gambarSekarang];
       return Center(
         child: SingleChildScrollView(
           child: Column(
@@ -200,7 +195,7 @@ class _GameState extends State<Game> {
                           "assets/images/${currentChoices[1]}.png",
                           height: 200,
                           width: 200,
-                        ), // pilihan gambar
+                        ),
                       ),
                     ],
                   ),
@@ -214,7 +209,7 @@ class _GameState extends State<Game> {
                           "assets/images/${currentChoices[2]}.png",
                           height: 200,
                           width: 200,
-                        ), // pilihan gambar
+                        ),
                       ),
                       TextButton(
                         onPressed: () =>
@@ -223,7 +218,7 @@ class _GameState extends State<Game> {
                           "assets/images/${currentChoices[3]}.png",
                           height: 200,
                           width: 200,
-                        ), // pilihan gambar
+                        ),
                       ),
                     ],
                   )
@@ -240,20 +235,17 @@ class _GameState extends State<Game> {
     String correctAnswer = _gambarDiingat[_gambarSekarang];
 
     if (selectedOption == correctAnswer) {
-      _score++; // tingkatkan skor jika jawaban benar
+      _score++;
     }
 
-    // Periksa apakah ini adalah set kuis terakhir
     if (_gambarSekarang >= _gambarKuis.length) {
-      // Jika set terakhir, hentikan timer dan berikan logika akhir kuis
-      _timer.cancel(); // hentikan timer untuk menghindari kebocoran memori
-      setState(() {}); // perbarui UI
+      _timer.cancel();
+      setState(() {});
     } else {
-      // Jika masih ada set kuis, lanjutkan ke set berikutnya
-      _gambarSekarang++; // pindah ke set berikutnya
-      _detik = _waktuKuis; // reset waktu untuk set kuis berikutnya
-      _timer.cancel(); // pastikan timer dihentikan
-      startQuiz(); // mulai ulang timer
+      _gambarSekarang++;
+      _detik = _waktuKuis;
+      _timer.cancel();
+      startQuiz();
     }
   }
 
@@ -263,40 +255,35 @@ class _GameState extends State<Game> {
 
     for (var memorizedImage in _gambarDiingat) {
       List<String> quizOptions = [];
-      int correctSet = int.parse(memorizedImage
-          .split('-')[1]); // ekstrak nomor set dari gambar yang diingat
+      int correctSet = int.parse(memorizedImage.split('-')[1]);
 
-      // Tambahkan jawaban yang benar (gambar yang diingat)
       quizOptions.add(memorizedImage);
 
-      // Tambahkan tiga gambar acak lainnya dari set yang sama
       while (quizOptions.length < 4) {
-        int randomImageNumber =
-            1 + random.nextInt(4); // acak angka 1-4 untuk gambar dalam set
+        int randomImageNumber = 1 + random.nextInt(4);
         String randomImage = "c-$correctSet-$randomImageNumber";
 
         if (!quizOptions.contains(randomImage)) {
-          // pastikan tidak ada duplikasi
           quizOptions.add(randomImage);
         }
       }
 
-      quizOptions.shuffle(); // acak urutan pilihan dalam set
-      quizSets.add(quizOptions); // tambahkan set kuis ke daftar
+      quizOptions.shuffle();
+      quizSets.add(quizOptions);
     }
 
-    return quizSets; // kembalikan daftar set kuis
+    return quizSets;
   }
 
   String formatTime(int detik) {
     var minutes = ((detik % 3600) ~/ 60).toString().padLeft(2, '0');
     var seconds = (detik % 60).toString().padLeft(2, '0');
-    return "$minutes:$seconds"; // format waktu
+    return "$minutes:$seconds";
   }
 
   @override
   void dispose() {
-    _timer.cancel(); // hentikan timer untuk menghindari kebocoran memori
+    _timer.cancel();
     super.dispose();
   }
 }
